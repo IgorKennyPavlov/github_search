@@ -32,18 +32,18 @@ const getRepos: Function = (searchString: string): Observable<GithubApiResponse 
     return from(fetch(`${base}?q=${parsedSearchString}&sort=stars&order=desc`))
         .pipe(
             switchMap((data: Response): Observable<GithubApiResponse> => from(data.json())),
-            catchError((error: TypeError) => {
-                console.log(`An error occured. ${error}`);
+            catchError((err: TypeError): Observable<null> => {
+                console.log(`An error occured. ${err}`);
                 return of(null);
             })
         );
 }
 
-const search: Function = (input$: Observable<string>, request: Function): Observable<GithubApiResponse> => {
+const search: Function = (input$: Observable<string>, request: Function): Observable<GithubApiResponse | null> => {
     return input$
         .pipe(
             filter((searchString: string): boolean => !!searchString.length),
-            switchMap((searchString: string): Observable<GithubApiResponse> => request(searchString))
+            switchMap((searchString: string): Observable<GithubApiResponse | null> => request(searchString))
         )
 }
 
@@ -65,11 +65,13 @@ const render: Function = (items: Repo[]): void => {
         repoImage.src = repo.owner.avatar_url;
         repoBlock.appendChild(repoImage);
 
-        const repoDescription: HTMLElement = document.createElement('p');
-        const descriptionText: string = repo.description.length < 200 ?
-            repo.description : `${repo.description.slice(0, 200)}...`
-        repoDescription.innerText = descriptionText;
-        repoBlock.appendChild(repoDescription);
+        if (repo.description) {
+            const repoDescription: HTMLElement = document.createElement('p');
+            const descriptionText: string = repo.description.length < 200 ?
+                repo.description : `${repo.description.slice(0, 200)}...`
+            repoDescription.innerText = descriptionText;
+            repoBlock.appendChild(repoDescription);
+        }
 
         resultsBlock.appendChild(repoBlock);
     });
@@ -83,4 +85,8 @@ const render: Function = (items: Repo[]): void => {
     });
 }
 
-search(inputChanged$, getRepos).subscribe((value: GithubApiResponse): void => render(value.items));
+search(inputChanged$, getRepos)
+    .pipe(
+        filter((data: GithubApiResponse | null) => data !== null)
+    )
+    .subscribe((value: GithubApiResponse): void => value.items && render(value.items));
