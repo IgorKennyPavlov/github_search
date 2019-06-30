@@ -1,14 +1,19 @@
 import { Observable, fromEvent, from, of } from 'rxjs';
 import { debounceTime, pluck, switchMap, catchError, filter } from 'rxjs/operators';
 
-interface SomeObject {
-    [key: string]: any;
+interface Repo {
+    name: string;
+    description: string;
+    html_url: string;
+    owner: {
+        avatar_url: string;
+    };
 }
 
 interface GithubApiResponse {
     inpumplete_results: boolean;
     total_count: number;
-    items: SomeObject[]
+    items: Repo[]
 }
 
 const searchInput: HTMLInputElement = document.getElementById('search') as HTMLInputElement;
@@ -20,32 +25,32 @@ const inputChanged$: Observable<string> = fromEvent(searchInput, 'input')
         pluck('target', 'value')
     );
 
-const getRepos: Function = (searchString: string) => {
+const getRepos: Function = (searchString: string): Observable<GithubApiResponse | null> => {
     const base: string = 'https://api.github.com/search/repositories';
     const parsedSearchString: string = searchString.split(/[\s,]+/).join('+');
 
     return from(fetch(`${base}?q=${parsedSearchString}&sort=stars&order=desc`))
         .pipe(
-            switchMap((data: Response) => from(data.json())),
+            switchMap((data: Response): Observable<GithubApiResponse> => from(data.json())),
             catchError((error: TypeError) => {
-                console.log(`An error occured: ${error}`);
+                console.log(`An error occured. ${error}`);
                 return of(null);
             })
         );
 }
 
-const search: Function = (input$: Observable<string>, request: Function) => {
+const search: Function = (input$: Observable<string>, request: Function): Observable<GithubApiResponse> => {
     return input$
         .pipe(
-            filter((searchString: string) => !!searchString.length),
-            switchMap(searchKeywords => request(searchKeywords))
+            filter((searchString: string): boolean => !!searchString.length),
+            switchMap((searchString: string): Observable<GithubApiResponse> => request(searchString))
         )
 }
 
-const render: Function = (data: SomeObject[]): void => {
+const render: Function = (items: Repo[]): void => {
     resultsBlock.innerHTML = '';
 
-    data.forEach((repo: SomeObject) => {
+    items.forEach((repo: Repo) => {
         const repoBlock = document.createElement('a');
         repoBlock.classList.add('repoBlock');
         repoBlock.href = repo.html_url;
