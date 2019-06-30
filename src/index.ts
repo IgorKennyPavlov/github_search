@@ -51,24 +51,35 @@ const render: Function = (items: Repo[]): void => {
     resultsBlock.innerHTML = '';
 
     items.forEach((repo: Repo) => {
-        const repoBlock = document.createElement('a');
+        const repoBlock: HTMLAnchorElement = document.createElement('a');
         repoBlock.classList.add('repoBlock');
         repoBlock.href = repo.html_url;
         repoBlock.target = '_blank';
+        repoBlock.title = repo.name;
 
-        const repoHeader = document.createElement('h2');
+        const repoHeader: HTMLHeadingElement = document.createElement('h2');
         repoHeader.innerText = repo.name;
         repoBlock.appendChild(repoHeader);
 
-        const repoImage = document.createElement('img');
+        const repoImage: HTMLImageElement = document.createElement('img');
         repoImage.src = repo.owner.avatar_url;
         repoBlock.appendChild(repoImage);
 
-        const repoDescription = document.createElement('p');
-        repoDescription.innerText = repo.description;
+        const repoDescription: HTMLElement = document.createElement('p');
+        const descriptionText: string = repo.description.length < 200 ?
+            repo.description : `${repo.description.slice(0, 200)}...`
+        repoDescription.innerText = descriptionText;
         repoBlock.appendChild(repoDescription);
 
         resultsBlock.appendChild(repoBlock);
+    });
+
+    document.querySelectorAll('h2').forEach((header: HTMLHeadingElement) => {
+        if (header.clientWidth === header.scrollWidth) {
+            return;
+        }
+
+        header.innerText = header.innerText.slice(0, 15) + '...';
     });
 }
 

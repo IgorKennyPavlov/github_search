@@ -25,7 +25,6 @@ input {
 }
 
 #results {
-    border: 1px solid red;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-around;
@@ -34,7 +33,8 @@ input {
 .repoBlock {
     margin: 20px;
     padding: 10px;
-    width: 30%;
+    width: 20%;
+    min-width: 200px;
     border: 1px solid #333;
     border-radius: 5px;
     display: flex;
@@ -53,6 +53,8 @@ input {
 
 .repoBlock h2 {
     text-align: center;
+    max-width: 100%;
+    overflow: hidden;
 }
 .repoBlock img {
     margin-top: 5px;
