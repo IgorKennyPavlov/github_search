@@ -1,0 +1,70 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    padding: 30px;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #ccc;
+    color: #333;
+}
+
+label {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    font-size: 30px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+input {
+    margin: 10px 0;
+    font-size: 30px;
+    color: #333;
+}
+
+#results {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.repoBlock {
+    margin: 20px;
+    padding: 10px;
+    width: 20%;
+    min-width: 200px;
+    border: 1px solid #333;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: #000;
+    cursor: pointer;
+    transition: .3s;
+}
+
+.repoBlock:hover {
+    text-decoration: underline;
+    background-color: #fff;
+}
+
+.repoBlock h2 {
+    text-align: center;
+    max-width: 100%;
+    overflow: hidden;
+}
+.repoBlock img {
+    margin-top: 5px;
+    width: 90%;
+}
+
+.repoBlock p {
+    margin-top: 10px;
+    max-width: 100%;
+    overflow: hidden;
+}
